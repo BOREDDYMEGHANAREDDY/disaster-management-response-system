@@ -12,36 +12,58 @@ function SendAlerts() {
 
   const [location, setLocation] =
     useState("");   // NEW
-
   const sendAlert = async () => {
 
-    try {
+  if (
+    !disasterType.trim() ||
+    !location.trim() ||
+    !message.trim()
+  ) {
 
-      await axios.post(
-        "http://localhost:5000/api/alerts/send",
-        {
-          message,
-          disasterType,
-          location   // IMPORTANT
-        }
-      );
+    alert("Please fill all fields");
+    return;
 
-      alert("🚨 Alert Sent!");
+  }
 
-      setMessage("");
-      setDisasterType("");
-      setLocation("");   // reset
+  try {
 
-    }
+    const res = await axios.post(
+      "https://disaster-management-response-system.onrender.com/api/alerts/send",
+      {
+        disasterType,
+        location,
+        message
+      }
+    );
 
-    catch (error) {
+    console.log("Alert Success:", res.data);
 
-      console.log(error);
-      alert("Error sending alert");
+    alert("🚨 Alert Sent Successfully!");
 
-    }
+    setMessage("");
+    setDisasterType("");
+    setLocation("");
 
-  };
+  }
+
+  catch (error) {
+
+    console.log(
+      "Alert Error:",
+      error.response?.data ||
+      error.message
+    );
+
+    alert(
+      error.response?.data?.message ||
+      "Error sending alert"
+    );
+
+  }
+
+};
+
+
 
   return (
 
