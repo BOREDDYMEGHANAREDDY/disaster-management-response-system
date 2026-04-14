@@ -1,14 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Login() {
 
-  const navigate = useNavigate();
-
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("User");
+  const [role, setRole] = useState("user");
 
   const handleLogin = async (e) => {
 
@@ -16,68 +13,63 @@ function Login() {
 
     try {
 
-      const response = await axios.post(
+      const res = await axios.post(
         "https://disaster-management-response-system.onrender.com/login",
         {
-          email: username,
-          password: password
+          email,
+          password
         }
       );
 
-      console.log("Login Response:", response.data);
-
-      /* Save token */
+      console.log(res.data);
 
       localStorage.setItem(
         "token",
-        response.data.token
+        res.data.token
       );
-
-      /* Save userId */
 
       localStorage.setItem(
-        "userId",
-        response.data.user._id
+        "role",
+        res.data.role
       );
 
-      /* Save role */
+      localStorage.setItem(
+        "user",
+        JSON.stringify(res.data.user)
+      );
 
-      const userRole =
-        response.data.role.toLowerCase();
+      alert("Login Successful");
 
-      /* Redirect */
+      /* Redirect based on role */
 
-      if (userRole === "admin") {
+      if (res.data.role === "admin") {
 
-        navigate("/admin");
+        window.location.href =
+          "/admin-dashboard";
 
       }
 
-      else if (userRole === "rescue") {
+      else if (res.data.role === "rescue") {
 
-        navigate("/rescue");
+        window.location.href =
+          "/rescue-dashboard";
 
       }
 
       else {
 
-        navigate("/user");
+        window.location.href =
+          "/user-dashboard";
 
       }
 
     }
 
-    catch (error) {
+    catch (err) {
 
-  console.log("Login Error:", error.response);
+      console.log(err);
 
-  alert(
-    error.response?.data?.message ||
-    JSON.stringify(error.response?.data) ||
-    "Login Failed"
-  );
-
-}
+      alert("Login Failed");
 
     }
 
@@ -85,92 +77,75 @@ function Login() {
 
   return (
 
-    <div style={styles.wrapper}>
+    <div className="login-container">
 
-      <div style={styles.overlay}></div>
+      <h2>🚨 Disaster Management System</h2>
 
-      <div style={styles.loginBox}>
+      <h3>Emergency Login Portal</h3>
 
-        <h1 style={styles.title}>
-          🚨 Disaster Management System
-        </h1>
+      <form onSubmit={handleLogin}>
 
-        <p style={styles.subtitle}>
-          Emergency Login Portal
-        </p>
+        <input
+          type="email"
+          placeholder="Enter Email"
+          value={email}
+          onChange={(e) =>
+            setEmail(e.target.value)
+          }
+          required
+        />
 
-        <form onSubmit={handleLogin}>
+        <input
+          type="password"
+          placeholder="Enter Password"
+          value={password}
+          onChange={(e) =>
+            setPassword(e.target.value)
+          }
+          required
+        />
 
-          <input
-            type="text"
-            placeholder="Email"
-            required
-            value={username}
-            onChange={(e) =>
-              setUsername(e.target.value)
-            }
-            style={styles.input}
-          />
+        <select
+          value={role}
+          onChange={(e) =>
+            setRole(e.target.value)
+          }
+        >
 
-          <input
-            type="password"
-            placeholder="Password"
-            required
-            value={password}
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
-            style={styles.input}
-          />
+          <option value="user">
+            User
+          </option>
 
-          <select
-            value={role}
-            onChange={(e) =>
-              setRole(e.target.value)
-            }
-            style={styles.select}
-          >
+          <option value="admin">
+            Admin
+          </option>
 
-            <option value="Admin">
-              Admin
-            </option>
+          <option value="rescue">
+            Rescue
+          </option>
 
-            <option value="Rescue">
-              Rescue Team
-            </option>
+        </select>
 
-            <option value="User">
-              User
-            </option>
+        <button type="submit">
 
-          </select>
+          LOGIN
 
-          <button
-            type="submit"
-            style={styles.button}
-          >
-            LOGIN
-          </button>
+        </button>
 
-          {role === "User" && (
+      </form>
 
-            <button
-              type="button"
-              style={styles.registerButton}
-              onClick={() =>
-                navigate("/register")
-              }
-            >
+      <br />
 
-              New User? Register Here
+      <button
+        onClick={() =>
+          window.location.href =
+          "/register"
+        }
+      >
 
-            </button>
+        New User? Register Here
 
-          )}
-
-        </form>
-
-      </div>
+      </button>
 
     </div>
 
