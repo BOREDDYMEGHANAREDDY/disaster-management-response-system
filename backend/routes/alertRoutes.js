@@ -21,6 +21,8 @@ router.post("/send", async (req, res) => {
       !message ||
       !disasterType
     ) {
+      console.log("Missing fields error");
+
 
       return res.status(400).json({
         message: "Missing fields"
