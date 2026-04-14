@@ -5,14 +5,16 @@ import "./dashboard.css";
 function ViewReports() {
 
   const [reports, setReports] = useState([]);
+  const [rescues, setRescues] = useState([]);
 
   useEffect(() => {
 
     fetchReports();
+    fetchRescues();
 
   }, []);
 
-  /* ================= FETCH REPORTS ================= */
+  /* FETCH REPORTS */
 
   const fetchReports = async () => {
 
@@ -34,16 +36,65 @@ function ViewReports() {
 
   };
 
-  /* ================= DELETE REPORT ================= */
+  /* FETCH RESCUE USERS */
+
+  const fetchRescues = async () => {
+
+    try {
+
+      const res = await axios.get(
+        "https://disaster-management-response-system.onrender.com/api/admin/rescues"
+      );
+
+      setRescues(res.data);
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+    }
+
+  };
+
+  /* ASSIGN RESCUE */
+
+  const assignRescue = async (reportId, rescueName) => {
+
+    try {
+
+      await axios.put(
+
+        `https://disaster-management-response-system.onrender.com/api/reports/${reportId}/assign`,
+
+        {
+          assignedRescue: rescueName
+        }
+
+      );
+
+      fetchReports();
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+      alert("Rescue assign failed");
+
+    }
+
+  };
+
+  /* DELETE */
 
   const deleteReport = async (id) => {
 
     try {
 
-      const confirmDelete =
-        window.confirm("Delete this report?");
-
-      if (!confirmDelete) return;
+      if (!window.confirm("Delete this report?")) return;
 
       await axios.delete(
         `https://disaster-management-response-system.onrender.com/api/reports/${id}`
@@ -61,7 +112,7 @@ function ViewReports() {
 
   };
 
-  /* ================= STATUS COLOR ================= */
+  /* STATUS COLOR */
 
   const getStatusColor = (status) => {
 
@@ -86,13 +137,6 @@ function ViewReports() {
 📋 Admin - Disaster Reports
 </h2>
 
-<button
-className="btn btn-refresh"
-onClick={fetchReports}
->
-🔄 Refresh
-</button>
-
 {reports.map(report => (
 
 <div
@@ -111,8 +155,6 @@ key={report._id}
 <p>
 📝 {report.description}
 </p>
-
-{/* STATUS DISPLAY */}
 
 <p>
 
@@ -134,19 +176,43 @@ report.status
 </p>
 
 <p>
-🕒 {
-new Date(
-report.createdAt
-).toLocaleString()
-}
+🚑 Assigned:
+
+<b>
+{report.assignedRescue || " None"}
+</b>
 </p>
+
+<select
+onChange={(e) =>
+assignRescue(
+report._id,
+e.target.value
+)
+}
+>
+
+<option>
+Assign Rescue
+</option>
+
+{rescues.map(rescue => (
+
+<option
+key={rescue._id}
+value={rescue.name}
+>
+{rescue.name}
+</option>
+
+))}
+
+</select>
 
 <button
 className="btn btn-delete"
 onClick={() =>
-deleteReport(
-report._id
-)
+deleteReport(report._id)
 }
 >
 🗑 Delete
