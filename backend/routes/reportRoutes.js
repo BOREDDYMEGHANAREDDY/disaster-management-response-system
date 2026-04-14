@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
     const uploadDir =
       path.join(__dirname, "../uploads");
 
-    // Ensure uploads folder exists (important for Render)
+    /* Ensure uploads folder exists */
 
     if (!fs.existsSync(uploadDir)) {
 
@@ -92,9 +92,6 @@ router.post(
 
     try {
 
-      console.log("BODY:", req.body);
-      console.log("FILE:", req.file);
-
       const {
         location,
         type,
@@ -102,26 +99,26 @@ router.post(
         userId
       } = req.body;
 
-      const report = await Report.create({
+      const report =
+        await Report.create({
 
-        location,
-        type,
-        description,
+          location,
+          type,
+          description,
 
-        image:
-          req.file
-          ? `/uploads/${req.file.filename}`
-          : "",
+          image:
+            req.file
+              ? `/uploads/${req.file.filename}`
+              : "",
 
-        lat: 17.3850,
-        lng: 78.4867,
+          lat: 17.3850,
+          lng: 78.4867,
 
-        userId,
+          userId,
 
-        status: "Pending",
-        assignedRescue: ""
+          status: "Pending"
 
-      });
+        });
 
       res.status(201).json(report);
 
@@ -129,7 +126,7 @@ router.post(
 
     catch (err) {
 
-      console.log("ERROR:", err);
+      console.log("CREATE ERROR:", err);
 
       res.status(500).json({
         message: err.message
@@ -155,7 +152,7 @@ router.get("/", async (req, res) => {
 
   catch (err) {
 
-    console.log(err);
+    console.log("GET ERROR:", err);
 
     res.status(500).json({
       message: err.message
@@ -165,7 +162,7 @@ router.get("/", async (req, res) => {
 
 });
 
-/* ================= UPDATE STATUS ================= */
+/* ================= UPDATE REPORT STATUS ================= */
 
 router.put("/:id/status", async (req, res) => {
 
@@ -194,67 +191,31 @@ router.put("/:id/status", async (req, res) => {
 
         { status },
 
-        { new: true }
+        {
+          new: true,
+          runValidators: true
+        }
 
       );
 
-    res.json(updatedReport);
+    if (!updatedReport) {
 
-  }
-
-  catch (err) {
-
-    console.log(err);
-
-    res.status(500).json({
-      message: err.message
-    });
-
-  }
-
-});
-
-/* ================= ASSIGN RESCUE ================= */
-
-router.put("/:id/assign", async (req, res) => {
-
-  try {
-
-    const { assignedRescue } =
-      req.body;
-
-    if (!assignedRescue) {
-
-      return res.status(400).json({
-        message: "Rescue name required"
+      return res.status(404).json({
+        message: "Report not found"
       });
 
     }
 
-    console.log(
-      "Assigning rescue:",
-      req.params.id,
-      assignedRescue
-    );
-
-    const updatedReport =
-      await Report.findByIdAndUpdate(
-
-        req.params.id,
-
-        { assignedRescue },
-
-        { new: true }
-
-      );
-
     res.json(updatedReport);
 
   }
 
   catch (err) {
 
-    console.log(err);
+    console.log(
+      "STATUS UPDATE ERROR:",
+      err
+    );
 
     res.status(500).json({
       message: err.message
@@ -289,14 +250,15 @@ router.delete("/:id", async (req, res) => {
     }
 
     res.json({
-      message: "Report deleted successfully"
+      message:
+        "Report deleted successfully"
     });
 
   }
 
   catch (err) {
 
-    console.log(err);
+    console.log("DELETE ERROR:", err);
 
     res.status(500).json({
       message: err.message
@@ -310,6 +272,7 @@ router.delete("/:id", async (req, res) => {
 
 router.get(
   "/my-reports/:userId",
+
   async (req, res) => {
 
     try {
@@ -328,7 +291,7 @@ router.get(
 
     catch (err) {
 
-      console.log(err);
+      console.log("MY REPORTS ERROR:", err);
 
       res.status(500).json({
         message: err.message

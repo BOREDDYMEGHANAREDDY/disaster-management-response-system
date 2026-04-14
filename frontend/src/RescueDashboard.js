@@ -284,7 +284,7 @@ alert._id,
 {/* ================= REPORTS ================= */}
 
 <h2>
-All Reports
+  All Reports
 </h2>
 
 {reports.length === 0 ? (
