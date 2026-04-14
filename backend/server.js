@@ -6,7 +6,7 @@ const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const http = require("http");
-const path = require("path");   // ✅ IMPORTANT
+const path = require("path"); // ✅ REQUIRED
 
 /* Models */
 
@@ -35,12 +35,12 @@ app.use(express.urlencoded({
   extended: true
 }));
 
-/* ================= Static uploads (FIXED) ================= */
+/* ================= Static uploads ================= */
 
 app.use(
   "/uploads",
   express.static(
-    path.join(__dirname, "uploads")   // ✅ FIXED
+    path.join(__dirname, "uploads")
   )
 );
 
@@ -52,7 +52,7 @@ app.use("/api/admin", adminRoutes);
 
 app.use("/api/alerts", alertRoutes);
 
-/* ================= MongoDB Connection ================= */
+/* ================= MongoDB ================= */
 
 mongoose.connect(process.env.MONGO_URI)
 
@@ -66,149 +66,124 @@ console.log("MongoDB Error:", err)
 
 /* ================= REGISTER ================= */
 
-app.post(
-"/register",
-async (req,res)=>{
+app.post("/register", async (req, res) => {
 
-try {
+  try {
 
-const {
-name,
-email,
-phone,
-location,
-username,
-password,
-role
-} = req.body;
+    const {
+      name,
+      email,
+      phone,
+      location,
+      username,
+      password,
+      role
+    } = req.body;
 
-const existing =
-await User.findOne({ email });
+    const existing =
+      await User.findOne({ email });
 
-if(existing)
-return res.send(
-"Email already exists"
-);
+    if (existing)
+      return res.send("Email already exists");
 
-/* Hash password */
+    const hashed =
+      await bcrypt.hash(password, 10);
 
-const hashed =
-await bcrypt.hash(password,10);
+    await User.create({
 
-await User.create({
+      name,
+      email,
+      phone,
+      location,
+      username,
+      password: hashed,
+      role: role || "user"
 
-name,
-email,
-phone,
-location,
-username,
-password: hashed,
-role: role || "user"
+    });
 
-});
+    res.send("Registered Successfully");
 
-res.send(
-"Registered Successfully"
-);
+  }
 
-}
+  catch (err) {
 
-catch(err){
+    console.log(err);
 
-console.log(err);
+    res.send("Register Error");
 
-res.send(
-"Register Error"
-);
-
-}
+  }
 
 });
 
 /* ================= LOGIN ================= */
 
-app.post(
-"/login",
-async (req,res)=>{
+app.post("/login", async (req, res) => {
 
-try {
+  try {
 
-const {
-email,
-password
-}
-= req.body;
+    const {
+      email,
+      password
+    } = req.body;
 
-/* Find user */
+    const user =
+      await User.findOne({ email });
 
-const user =
-await User.findOne({ email });
+    if (!user)
+      return res.status(400).json({
+        message: "User not found"
+      });
 
-if(!user)
-return res.status(400)
-.json({
-message:"User not found"
-});
+    const valid =
+      await bcrypt.compare(
+        password,
+        user.password
+      );
 
-/* Compare password */
+    if (!valid)
+      return res.status(400).json({
+        message: "Wrong password"
+      });
 
-const valid =
-await bcrypt.compare(
-password,
-user.password
-);
+    const token =
+      jwt.sign({
+        id: user._id,
+        role: user.role
+      },
+      "secretkey"
+      );
 
-if(!valid)
-return res.status(400)
-.json({
-message:"Wrong password"
-});
+    res.json({
 
-/* Create token */
+      token,
+      role: user.role,
+      user
 
-const token =
-jwt.sign({
+    });
 
-id:user._id,
-role:user.role
+  }
 
-},
-"secretkey"
-);
+  catch (err) {
 
-/* Send response */
+    console.log(err);
 
-res.json({
+    res.status(500).json({
+      message: "Login Error"
+    });
 
-token,
-role:user.role,
-user
-
-});
-
-}
-
-catch(err){
-
-console.log(err);
-
-res.status(500).json({
-message:"Login Error"
-});
-
-}
+  }
 
 });
 
-/* ================= Root Route ================= */
+/* ================= Root ================= */
 
-app.get("/", (req,res)=>{
+app.get("/", (req, res) => {
 
-res.send("Server Running");
+  res.send("Server Running");
 
 });
 
-/* ================= SERVER ================= */
+/* ================= Server ================= */
 
 const PORT =
 process.env.PORT || 5000;
@@ -217,8 +192,9 @@ const server =
 http.createServer(app);
 
 server.listen(
-PORT,
-()=>console.log(
-`Server running on port ${PORT}`
-)
+  PORT,
+  () =>
+    console.log(
+      `Server running on port ${PORT}`
+    )
 );
