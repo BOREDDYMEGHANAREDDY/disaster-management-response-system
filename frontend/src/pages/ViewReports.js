@@ -115,41 +115,6 @@ function ViewReports() {
 
   };
 
-  /* ================= UPDATE STATUS ================= */
-
-  const updateStatus = async (reportId, status) => {
-
-  try {
-
-    console.log(
-      "Updating status:",
-      reportId,
-      status
-    );
-
-    await axios.put(
-
-      `https://disaster-management-response-system.onrender.com/api/reports/${reportId}/status`,
-
-      {
-        status: status
-      }
-
-    );
-
-    fetchReports();
-
-  }
-
-  catch (error) {
-
-    console.log("Status Error:", error);
-
-    alert("Status update failed");
-
-  }
-
-};
   /* ================= STATUS COLOR ================= */
 
   const getStatusColor = (status) => {
@@ -201,7 +166,7 @@ key={report._id}
 📝 {report.description}
 </p>
 
-{/* ================= STATUS ================= */}
+{/* STATUS VIEW ONLY */}
 
 <p>
 
@@ -216,84 +181,22 @@ report.status
 }}
 >
 
- {report.status}
+{report.status}
 
 </b>
 
 </p>
 
-<select
-
-className="btn btn-status"
-
-value={report.status}
-
-onChange={(e) =>
-
-updateStatus(
-report._id,
-e.target.value
-)
-
-}
->
-
-<option value="Pending">
-Pending
-</option>
-
-<option value="On The Way">
-On The Way
-</option>
-
-<option value="Resolved">
-Resolved
-</option>
-
-</select>
-
-{/* ================= ASSIGNED RESCUE ================= */}
+{/* ASSIGNED RESCUE */}
 
 <p>
 🚑 Assigned:
 
 <b>
- {report.assignedRescue || " None"}
+{report.assignedRescue || " None"}
 </b>
+
 </p>
-
-<select
-
-className="btn btn-assign"
-
-onChange={(e) =>
-
-assignRescue(
-report._id,
-e.target.value
-)
-
-}
->
-
-<option>
-Assign Rescue
-</option>
-
-{rescues.map(rescue => (
-
-<option
-key={rescue._id}
-value={rescue.name}
->
-
-{rescue.name}
-
-</option>
-
-))}
-
-</select>
 
 <p>
 🕒 {

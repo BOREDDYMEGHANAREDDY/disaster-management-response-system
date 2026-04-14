@@ -72,12 +72,30 @@ function RescueDashboard() {
 
       try {
 
+        const user =
+          JSON.parse(
+            localStorage.getItem("user")
+          );
+
         const res =
           await axios.get(
 "https://disaster-management-response-system.onrender.com/api/reports"
           );
 
-        setReports(res.data);
+        /* SHOW ONLY ASSIGNED REPORTS */
+
+        const assignedReports =
+          res.data.filter(
+
+            report =>
+              report.assignedRescue ===
+              user.name
+
+          );
+
+        setReports(
+          assignedReports
+        );
 
       }
 
@@ -137,6 +155,7 @@ id +
       catch (error) {
 
         console.log(error);
+        alert("Status update failed");
 
       }
 
@@ -229,21 +248,21 @@ alert.status === "Completed"
 
 <p>
 🔥 Type:
- <strong>
- {alert.disasterType}
- </strong>
+<strong>
+{alert.disasterType}
+</strong>
 </p>
 
 <p>
 📍 Location:
- {alert.location || "Not specified"}
+{alert.location || "Not specified"}
 </p>
 
 <p>
 Status:
- <strong>
- {alert.status || "Active"}
- </strong>
+<strong>
+{alert.status || "Active"}
+</strong>
 </p>
 
 {alert.status !== "Completed" && (
@@ -276,10 +295,16 @@ alert._id,
 {/* ================= REPORTS ================= */}
 
 <h2>
-📋 Reports
+📋 Assigned Reports
 </h2>
 
-{reports.map((report) => (
+{reports.length === 0 ? (
+
+<p>No reports assigned</p>
+
+) : (
+
+reports.map((report) => (
 
 <div
 key={report._id}
@@ -291,7 +316,7 @@ style={styles.reportCard}
 
 <p>
 📍 Location:
- {report.location}
+{report.location}
 </p>
 
 <p>
@@ -300,9 +325,9 @@ style={styles.reportCard}
 
 <p>
 Status:
- <strong>
- {report.status}
- </strong>
+<strong>
+{report.status}
+</strong>
 </p>
 
 <select
@@ -323,16 +348,25 @@ style={styles.dropdown}
 
 >
 
-<option>Pending</option>
-<option>On The Way</option>
-<option>Resolved</option>
-<option>Completed</option>
+<option value="Pending">
+Pending
+</option>
+
+<option value="On The Way">
+On The Way
+</option>
+
+<option value="Resolved">
+Resolved
+</option>
 
 </select>
 
 </div>
 
-))}
+))
+
+)}
 
 </div>
 
@@ -345,8 +379,6 @@ style={styles.dropdown}
 /* ================= STYLES ================= */
 
 const styles = {
-
-/* 🌍 SAME DISASTER BACKGROUND */
 
 wrapper: {
 
