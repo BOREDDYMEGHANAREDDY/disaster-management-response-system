@@ -69,10 +69,15 @@ function Login() {
 
     catch (error) {
 
-      alert(
-        error.response?.data?.message ||
-        "Login Failed"
-      );
+  console.log("Login Error:", error.response);
+
+  alert(
+    error.response?.data?.message ||
+    JSON.stringify(error.response?.data) ||
+    "Login Failed"
+  );
+
+}
 
     }
 
