@@ -68,44 +68,44 @@ function RescueDashboard() {
   /* ================= FETCH REPORTS ================= */
 
   const fetchReports =
-    async () => {
+  async () => {
 
-      try {
+    try {
 
-        const user =
-          JSON.parse(
-            localStorage.getItem("user")
-          );
-
-        const res =
-          await axios.get(
-"https://disaster-management-response-system.onrender.com/api/reports"
-          );
-
-        /* SHOW ONLY ASSIGNED REPORTS */
-
-        const assignedReports =
-          res.data.filter(
-
-            report =>
-              report.assignedRescue ===
-              user.name
-
-          );
-
-        setReports(
-          assignedReports
+      const user =
+        JSON.parse(
+          localStorage.getItem("user")
         );
 
-      }
+      const res =
+        await axios.get(
+"https://disaster-management-response-system.onrender.com/api/reports"
+        );
 
-      catch (error) {
+      /* SHOW ONLY ASSIGNED REPORTS */
 
-        console.log(error);
+      const assignedReports =
+        res.data.filter(
 
-      }
+          report =>
+            report.assignedRescue ===
+            user.username   // ✅ FIXED
 
-  };
+        );
+
+      setReports(
+        assignedReports
+      );
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+    }
+
+};
 
   /* ================= FETCH ALERTS ================= */
 
