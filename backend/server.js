@@ -50,10 +50,14 @@ app.use("/api/admin", adminRoutes);
 
 app.use("/api/alerts", alertRoutes);
 
-/* MongoDB */
+/* ================= MongoDB Connection ================= */
 
 mongoose.connect(
-"mongodb://127.0.0.1:27017/disasterDB"
+process.env.MONGO_URI,
+{
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}
 )
 
 .then(() =>
@@ -61,7 +65,7 @@ console.log("MongoDB Connected")
 )
 
 .catch(err =>
-console.log(err)
+console.log("MongoDB Error:", err)
 );
 
 /* ================= REGISTER ================= */
@@ -185,14 +189,25 @@ message:"Login Error"
 
 });
 
+/* ================= Root Route ================= */
+
+app.get("/", (req,res)=>{
+
+res.send("Server Running");
+
+});
+
 /* ================= SERVER ================= */
+
+const PORT =
+process.env.PORT || 5000;
 
 const server =
 http.createServer(app);
 
 server.listen(
-5000,
+PORT,
 ()=>console.log(
-"Server running on port 5000"
+`Server running on port ${PORT}`
 )
 );
