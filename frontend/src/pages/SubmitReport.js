@@ -13,7 +13,7 @@ function SubmitReport() {
   const [image, setImage] =
     useState(null);
 
-  /* Handle Input */
+  /* ================= Handle Input ================= */
 
   const handleChange = (e) => {
 
@@ -25,16 +25,24 @@ function SubmitReport() {
 
   };
 
-  /* Handle Image */
+  /* ================= Handle Image ================= */
 
   const handleImageChange =
     (e) => {
 
-      setImage(e.target.files[0]);
+      const file =
+        e.target.files[0];
+
+      console.log(
+        "Selected file:",
+        file
+      );
+
+      setImage(file);
 
   };
 
-  /* Submit Report */
+  /* ================= Submit Report ================= */
 
   const handleSubmit =
     async (e) => {
@@ -61,7 +69,7 @@ function SubmitReport() {
           formData.description
         );
 
-        /* ⭐ ADD THIS PART */
+        /* Get userId */
 
         const userId =
           localStorage.getItem("userId");
@@ -71,7 +79,7 @@ function SubmitReport() {
           userId
         );
 
-        /* ⭐ END */
+        /* Append image */
 
         if (image) {
 
@@ -82,24 +90,21 @@ function SubmitReport() {
 
         }
 
+        /* Send Request */
+
         await axios.post(
 
 "https://disaster-management-response-system.onrender.com/api/reports",
 
-          data,
-
-          {
-            headers: {
-              "Content-Type":
-              "multipart/form-data"
-            }
-          }
+          data
 
         );
 
         alert(
 "🚨 Report Submitted Successfully!"
         );
+
+        /* Reset Form */
 
         setFormData({
           location: "",
@@ -113,7 +118,10 @@ function SubmitReport() {
 
       catch (error) {
 
-        console.log(error);
+        console.log(
+          "Submit Error:",
+          error
+        );
 
         alert(
 "Error submitting report"
@@ -146,7 +154,7 @@ required
 style={styles.input}
 />
 
-{/* Type */}
+{/* Disaster Type */}
 
 <select
 name="type"
@@ -183,6 +191,7 @@ style={styles.textarea}
 
 <input
 type="file"
+name="image"   // ⭐ IMPORTANT
 accept="image/*"
 onChange={handleImageChange}
 style={styles.fileInput}

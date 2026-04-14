@@ -9,11 +9,24 @@ router.post("/send", async (req, res) => {
 
   try {
 
+    console.log("Alert received:", req.body);
+
     const {
       message,
       disasterType,
       location
     } = req.body;
+
+    if (
+      !message ||
+      !disasterType
+    ) {
+
+      return res.status(400).json({
+        message: "Missing fields"
+      });
+
+    }
 
     const alert =
       await Alert.create({
@@ -24,13 +37,15 @@ router.post("/send", async (req, res) => {
 
       });
 
+    console.log("Alert saved");
+
     res.status(201).json(alert);
 
   }
 
   catch (error) {
 
-    console.log(error);
+    console.log("Alert ERROR:", error);
 
     res.status(500).json({
       message: error.message

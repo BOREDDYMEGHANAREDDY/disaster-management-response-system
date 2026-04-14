@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 
     cb(
       null,
-      path.join(__dirname, "../uploads")
+      path.join(__dirname, "..", "uploads")
     );
 
   },
@@ -40,7 +40,35 @@ const upload = multer({
   storage: storage,
 
   limits: {
-    fileSize: 5 * 1024 * 1024   // 5MB limit
+    fileSize: 5 * 1024 * 1024
+  },
+
+  fileFilter: (req, file, cb) => {
+
+    const allowedTypes =
+      /jpeg|jpg|png/;
+
+    const ext =
+      path.extname(
+        file.originalname
+      ).toLowerCase();
+
+    if (allowedTypes.test(ext)) {
+
+      cb(null, true);
+
+    }
+
+    else {
+
+      cb(
+        new Error(
+          "Only images allowed"
+        )
+      );
+
+    }
+
   }
 
 });
@@ -73,7 +101,7 @@ router.post(
 
         image:
           req.file
-          ? req.file.filename
+          ? `/uploads/${req.file.filename}`
           : "",
 
         lat: 17.3850,
@@ -126,6 +154,48 @@ router.get(
     }
 
 });
+/* ================= UPDATE REPORT STATUS ================= */
+
+router.put("/:id", async (req, res) => {
+
+  try {
+
+    console.log(
+      "Updating status:",
+      req.params.id,
+      req.body.status
+    );
+
+    const updatedReport =
+      await Report.findByIdAndUpdate(
+
+        req.params.id,
+
+        {
+          status: req.body.status
+        },
+
+        {
+          new: true
+        }
+
+      );
+
+    res.json(updatedReport);
+
+  }
+
+  catch (err) {
+
+    console.log(err);
+
+    res.status(500).json({
+      message: err.message
+    });
+
+  }
+
+});
 
 /* ================= MY REPORTS ================= */
 
@@ -159,5 +229,29 @@ router.get(
     }
 
 });
+/* ================= MULTER ERROR HANDLER ================= */
+
+router.use((err, req, res, next) => {
+
+  if (err instanceof multer.MulterError) {
+
+    return res.status(400).json({
+      message: err.message
+    });
+
+  }
+
+  else if (err) {
+
+    return res.status(400).json({
+      message: err.message
+    });
+
+  }
+
+  next();
+
+});
+
 
 module.exports = router;
