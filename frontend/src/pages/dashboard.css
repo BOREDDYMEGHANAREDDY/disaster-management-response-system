@@ -1,0 +1,128 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* Main Container */
+
+.dashboard-container {
+  min-height: 100vh;
+  padding: 30px;
+
+  background:
+    linear-gradient(
+      rgba(0,0,0,0.85),
+      rgba(0,0,0,0.95)
+    ),
+    url("https://images.unsplash.com/photo-1542314831-068cd1dbfeeb");
+
+  background-size: cover;
+  color: white;
+}
+
+/* Title */
+
+.dashboard-title {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 25px;
+  color: #ff4d4d;
+}
+
+/* Card */
+
+.card {
+  background: rgba(255,255,255,0.08);
+  padding: 20px;
+  margin-bottom: 20px;
+
+  border-radius: 12px;
+
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 0 10px rgba(255,0,0,0.4);
+}
+
+/* Buttons */
+
+.btn {
+  padding: 8px 16px;
+
+  border: none;
+
+  border-radius: 6px;
+
+  cursor: pointer;
+
+  font-weight: bold;
+}
+
+.btn-delete {
+  background: #ff4d4d;
+  color: white;
+}
+
+.btn-delete:hover {
+  background: #cc0000;
+}
+
+.btn-primary {
+  background: #ff6600;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #cc5200;
+}
+.btn-assign {
+
+  background: #2196f3;
+
+  color: white;
+
+  margin-top: 8px;
+
+}
+
+.btn-refresh {
+
+  background: orange;
+
+  color: white;
+
+  margin-bottom: 15px;
+
+}
+
+
+/* Inputs */
+
+.input {
+  padding: 10px;
+  margin: 10px 0;
+
+  width: 100%;
+
+  border-radius: 6px;
+  border: none;
+}
+
+/* Table */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  padding: 12px;
+
+  background: #ff4d4d;
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid gray;
+}
