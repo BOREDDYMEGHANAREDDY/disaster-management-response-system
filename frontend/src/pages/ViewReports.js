@@ -4,11 +4,8 @@ import "./dashboard.css";
 
 function ViewReports() {
 
-  const [reports, setReports] =
-    useState([]);
-
-  const [rescues, setRescues] =
-    useState([]);
+  const [reports, setReports] = useState([]);
+  const [rescues, setRescues] = useState([]);
 
   useEffect(() => {
 
@@ -19,119 +16,149 @@ function ViewReports() {
 
   /* ================= FETCH REPORTS ================= */
 
-  const fetchReports =
-    async () => {
+  const fetchReports = async () => {
 
-      try {
+    try {
 
-        const res =
-          await axios.get(
-            "https://disaster-management-response-system.onrender.com/api/reports"
-          );
+      const res = await axios.get(
+        "https://disaster-management-response-system.onrender.com/api/reports"
+      );
 
-        setReports(res.data);
+      setReports(res.data);
 
-      }
+    }
 
-      catch (error) {
+    catch (error) {
 
-        console.log(error);
+      console.log(error);
 
-      }
+    }
 
   };
 
   /* ================= FETCH RESCUE TEAMS ================= */
 
-  const fetchRescues =
-    async () => {
+  const fetchRescues = async () => {
 
-      try {
+    try {
 
-        const res =
-          await axios.get(
-            "https://disaster-management-response-system.onrender.com/api/admin/rescues"
-          );
+      const res = await axios.get(
+        "https://disaster-management-response-system.onrender.com/api/admin/rescues"
+      );
 
-        setRescues(res.data);
+      setRescues(res.data);
 
-      }
+    }
 
-      catch (error) {
+    catch (error) {
 
-        console.log(error);
+      console.log(error);
 
-      }
+    }
 
   };
 
   /* ================= DELETE REPORT ================= */
 
-  const deleteReport =
-    async (id) => {
+  const deleteReport = async (id) => {
 
-      try {
+    try {
 
-        await axios.delete(
-          `https://disaster-management-response-system.onrender.com/api/reports/${id}`
-        );
+      const confirmDelete =
+        window.confirm("Delete this report?");
 
-        fetchReports();
+      if (!confirmDelete) return;
 
-      }
+      await axios.delete(
+        `https://disaster-management-response-system.onrender.com/api/reports/${id}`
+      );
 
-      catch (error) {
+      fetchReports();
 
-        console.log(error);
+    }
 
-      }
+    catch (error) {
+
+      console.log(error);
+
+    }
 
   };
 
   /* ================= ASSIGN RESCUE ================= */
 
-  const assignRescue =
-    async (reportId, rescueName) => {
+  const assignRescue = async (reportId, rescueName) => {
 
-      try {
+    try {
 
-        await axios.put(
+      await axios.put(
 
-          `https://disaster-management-response-system.onrender.com/api/reports/${reportId}/assign`,
+        `https://disaster-management-response-system.onrender.com/api/reports/${reportId}/assign`,
 
-          {
-            assignedRescue: rescueName
-          }
+        {
+          assignedRescue: rescueName
+        }
 
-        );
+      );
 
-        fetchReports();
+      fetchReports();
 
-      }
+    }
 
-      catch (error) {
+    catch (error) {
 
-        console.log(error);
+      console.log(error);
 
-      }
+      alert("Rescue assign failed");
+
+    }
+
+  };
+
+  /* ================= UPDATE STATUS ================= */
+
+  const updateStatus = async (reportId, status) => {
+
+    try {
+
+      await axios.put(
+
+        `https://disaster-management-response-system.onrender.com/api/reports/${reportId}`,
+
+        {
+          status: status
+        }
+
+      );
+
+      fetchReports();
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+      alert("Status update failed");
+
+    }
 
   };
 
   /* ================= STATUS COLOR ================= */
 
-  const getStatusColor =
-    (status) => {
+  const getStatusColor = (status) => {
 
-      if (status === "Pending")
-        return "#ff9800";
+    if (status === "Pending")
+      return "#ff9800";
 
-      if (status === "On The Way")
-        return "#2196f3";
+    if (status === "On The Way")
+      return "#2196f3";
 
-      if (status === "Resolved")
-        return "#4caf50";
+    if (status === "Resolved")
+      return "#4caf50";
 
-      return "white";
+    return "white";
 
   };
 
@@ -169,6 +196,8 @@ key={report._id}
 📝 {report.description}
 </p>
 
+{/* ================= STATUS ================= */}
+
 <p>
 
 Status:
@@ -182,11 +211,41 @@ report.status
 }}
 >
 
-{report.status}
+ {report.status}
 
 </b>
 
 </p>
+
+<select
+
+className="btn btn-status"
+
+value={report.status}
+
+onChange={(e) =>
+
+updateStatus(
+report._id,
+e.target.value
+)
+
+}
+>
+
+<option value="Pending">
+Pending
+</option>
+
+<option value="On The Way">
+On The Way
+</option>
+
+<option value="Resolved">
+Resolved
+</option>
+
+</select>
 
 {/* ================= ASSIGNED RESCUE ================= */}
 
@@ -197,8 +256,6 @@ report.status
  {report.assignedRescue || " None"}
 </b>
 </p>
-
-{/* ================= RESCUE DROPDOWN ================= */}
 
 <select
 
@@ -258,7 +315,7 @@ report._id
 
 </div>
 
-);
+  );
 
 }
 

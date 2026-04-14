@@ -15,22 +15,26 @@ router.get("/stats", async (req, res) => {
 
     const pending =
       await Report.countDocuments({
+
         status: {
           $in: ["Pending", "On The Way"]
         }
+
       });
 
     const resolved =
       await Report.countDocuments({
-        status: {
-          $in: ["Resolved", "Completed"]
-        }
+
+        status: "Resolved"
+
       });
 
     res.json({
+
       total,
       pending,
       resolved
+
     });
 
   }
@@ -40,27 +44,12 @@ router.get("/stats", async (req, res) => {
     console.log(error);
 
     res.status(500).json({
+
       message: error.message
+
     });
 
   }
-
-});
-
-
-/* ================= SEND ALERT ================= */
-
-router.post("/", (req, res) => {
-
-  console.log(
-    "Alert received:",
-    req.body
-  );
-
-  res.json({
-    message:
-      "Alert sent successfully"
-  });
 
 });
 
@@ -87,9 +76,12 @@ router.get("/users", async (req, res) => {
 
   catch (error) {
 
+    console.log(error);
+
     res.status(500).json({
-      message:
-        error.message
+
+      message: error.message
+
     });
 
   }
@@ -99,8 +91,7 @@ router.get("/users", async (req, res) => {
 
 /* ================= DELETE USER ================= */
 
-router.delete("/user/:id",
-async (req, res) => {
+router.delete("/user/:id", async (req, res) => {
 
   try {
 
@@ -109,17 +100,23 @@ async (req, res) => {
     );
 
     res.json({
+
       message:
         "User Deleted"
+
     });
 
   }
 
   catch (error) {
 
+    console.log(error);
+
     res.status(500).json({
+
       message:
         error.message
+
     });
 
   }
@@ -129,14 +126,15 @@ async (req, res) => {
 
 /* ================= GET RESCUE USERS ================= */
 
-router.get("/rescues",
-async (req, res) => {
+router.get("/rescues", async (req, res) => {
 
   try {
 
     const rescues =
       await User.find({
+
         role: "rescue"
+
       });
 
     res.json(rescues);
@@ -145,9 +143,13 @@ async (req, res) => {
 
   catch (error) {
 
+    console.log(error);
+
     res.status(500).json({
+
       message:
         error.message
+
     });
 
   }
