@@ -82,20 +82,9 @@ function RescueDashboard() {
 "https://disaster-management-response-system.onrender.com/api/reports"
         );
 
-      /* SHOW ONLY ASSIGNED REPORTS */
+      /* SHOW ALL REPORTS */
 
-      const assignedReports =
-        res.data.filter(
-
-          report =>
-            report.assignedRescue ===
-            user.username   // ✅ FIXED
-
-        );
-
-      setReports(
-        assignedReports
-      );
+    setReports(res.data);
 
     }
 
@@ -295,12 +284,12 @@ alert._id,
 {/* ================= REPORTS ================= */}
 
 <h2>
-📋 Assigned Reports
+All Reports
 </h2>
 
 {reports.length === 0 ? (
 
-<p>No reports assigned</p>
+<p>No reports available</p>
 
 ) : (
 
