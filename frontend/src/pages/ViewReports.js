@@ -5,12 +5,10 @@ import "./dashboard.css";
 function ViewReports() {
 
   const [reports, setReports] = useState([]);
-  const [rescues, setRescues] = useState([]);
 
   useEffect(() => {
 
     fetchReports();
-    fetchRescues();
 
   }, []);
 
@@ -25,28 +23,6 @@ function ViewReports() {
       );
 
       setReports(res.data);
-
-    }
-
-    catch (error) {
-
-      console.log(error);
-
-    }
-
-  };
-
-  /* ================= FETCH RESCUE TEAMS ================= */
-
-  const fetchRescues = async () => {
-
-    try {
-
-      const res = await axios.get(
-        "https://disaster-management-response-system.onrender.com/api/admin/rescues"
-      );
-
-      setRescues(res.data);
 
     }
 
@@ -80,36 +56,6 @@ function ViewReports() {
     catch (error) {
 
       console.log(error);
-
-    }
-
-  };
-
-  /* ================= ASSIGN RESCUE ================= */
-
-  const assignRescue = async (reportId, rescueName) => {
-
-    try {
-
-      await axios.put(
-
-        `https://disaster-management-response-system.onrender.com/api/reports/${reportId}/assign`,
-
-        {
-          assignedRescue: rescueName
-        }
-
-      );
-
-      fetchReports();
-
-    }
-
-    catch (error) {
-
-      console.log(error);
-
-      alert("Rescue assign failed");
 
     }
 
@@ -166,7 +112,7 @@ key={report._id}
 📝 {report.description}
 </p>
 
-{/* STATUS VIEW ONLY */}
+{/* STATUS DISPLAY */}
 
 <p>
 
@@ -183,17 +129,6 @@ report.status
 
 {report.status}
 
-</b>
-
-</p>
-
-{/* ASSIGNED RESCUE */}
-
-<p>
-🚑 Assigned:
-
-<b>
-{report.assignedRescue || " None"}
 </b>
 
 </p>
