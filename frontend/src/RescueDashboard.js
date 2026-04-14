@@ -68,33 +68,29 @@ function RescueDashboard() {
   /* ================= FETCH REPORTS ================= */
 
   const fetchReports =
-  async () => {
+    async () => {
 
-    try {
+      try {
 
-      const user =
-        JSON.parse(
-          localStorage.getItem("user")
-        );
-
-      const res =
-        await axios.get(
+        const res =
+          await axios.get(
 "https://disaster-management-response-system.onrender.com/api/reports"
+          );
+
+        setReports(res.data);
+
+      }
+
+      catch (error) {
+
+        console.log(
+          "Fetch Reports Error:",
+          error
         );
 
-      /* SHOW ALL REPORTS */
+      }
 
-    setReports(res.data);
-
-    }
-
-    catch (error) {
-
-      console.log(error);
-
-    }
-
-};
+    };
 
   /* ================= FETCH ALERTS ================= */
 
@@ -114,11 +110,14 @@ function RescueDashboard() {
 
       catch (error) {
 
-        console.log(error);
+        console.log(
+          "Fetch Alerts Error:",
+          error
+        );
 
       }
 
-  };
+    };
 
   /* ================= UPDATE REPORT STATUS ================= */
 
@@ -126,6 +125,12 @@ function RescueDashboard() {
     async (id, status) => {
 
       try {
+
+        console.log(
+          "Updating:",
+          id,
+          status
+        );
 
         await axios.put(
 
@@ -137,18 +142,30 @@ id +
 
         );
 
-        fetchReports();
+        /* Refresh after update */
+
+        setTimeout(() => {
+
+          fetchReports();
+
+        }, 500);
 
       }
 
       catch (error) {
 
-        console.log(error);
-        alert("Status update failed");
+        console.log(
+          "Status Update Error:",
+          error
+        );
+
+        alert(
+          "Status update failed"
+        );
 
       }
 
-  };
+    };
 
   /* ================= UPDATE ALERT STATUS ================= */
 
@@ -173,11 +190,14 @@ id +
 
       catch (error) {
 
-        console.log(error);
+        console.log(
+          "Alert Update Error:",
+          error
+        );
 
       }
 
-  };
+    };
 
   return (
 
@@ -284,7 +304,7 @@ alert._id,
 {/* ================= REPORTS ================= */}
 
 <h2>
-  All Reports
+📋 All Reports
 </h2>
 
 {reports.length === 0 ? (
@@ -301,7 +321,9 @@ key={report._id}
 style={styles.reportCard}
 >
 
-<h3>{report.type}</h3>
+<h3>
+🚨 {report.type}
+</h3>
 
 <p>
 📍 Location:
@@ -309,8 +331,21 @@ style={styles.reportCard}
 </p>
 
 <p>
-{report.description}
+📝 {report.description}
 </p>
+
+{report.image && (
+
+<img
+src={
+"https://disaster-management-response-system.onrender.com" +
+report.image
+}
+alt="Report"
+style={styles.image}
+/>
+
+)}
 
 <p>
 Status:
@@ -328,7 +363,6 @@ onChange={(e) =>
 updateReportStatus(
 report._id,
 e.target.value
-
 )
 
 }
@@ -341,8 +375,8 @@ style={styles.dropdown}
 Pending
 </option>
 
-<option value="On The Way">
-On The Way
+<option value="In Progress">
+In Progress
 </option>
 
 <option value="Resolved">
@@ -494,6 +528,20 @@ marginTop: "10px",
 padding: "6px",
 
 borderRadius: "5px"
+
+},
+
+image: {
+
+width: "100%",
+
+maxHeight: "200px",
+
+objectFit: "cover",
+
+marginTop: "10px",
+
+borderRadius: "8px"
 
 },
 
