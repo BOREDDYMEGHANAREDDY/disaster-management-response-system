@@ -4,7 +4,8 @@ import "./dashboard.css";
 
 function ViewReports() {
 
-  const [reports, setReports] = useState([]);
+  const [reports, setReports] =
+    useState([]);
 
   useEffect(() => {
 
@@ -41,7 +42,9 @@ function ViewReports() {
     try {
 
       const confirmDelete =
-        window.confirm("Delete this report?");
+        window.confirm(
+          "Delete this report?"
+        );
 
       if (!confirmDelete) return;
 
@@ -63,18 +66,19 @@ function ViewReports() {
 
   /* ================= STATUS COLOR ================= */
 
-  const getStatusColor = (status) => {
+  const getStatusColor =
+    (status) => {
 
-    if (status === "Pending")
-      return "#ff9800";
+      if (status === "Pending")
+        return "#ff9800";
 
-    if (status === "On The Way")
-      return "#2196f3";
+      if (status === "On The Way")
+        return "#2196f3";
 
-    if (status === "Resolved")
-      return "#4caf50";
+      if (status === "Resolved")
+        return "#4caf50";
 
-    return "white";
+      return "white";
 
   };
 
@@ -112,8 +116,6 @@ key={report._id}
 📝 {report.description}
 </p>
 
-{/* STATUS DISPLAY */}
-
 <p>
 
 Status:
@@ -127,7 +129,7 @@ report.status
 }}
 >
 
-{report.status}
+ {report.status}
 
 </b>
 
