@@ -196,6 +196,47 @@ router.put("/:id", async (req, res) => {
   }
 
 });
+/* ================= DELETE REPORT ================= */
+
+router.delete("/:id", async (req, res) => {
+
+  try {
+
+    console.log(
+      "Deleting report:",
+      req.params.id
+    );
+
+    const deletedReport =
+      await Report.findByIdAndDelete(
+        req.params.id
+      );
+
+    if (!deletedReport) {
+
+      return res.status(404).json({
+        message: "Report not found"
+      });
+
+    }
+
+    res.json({
+      message: "Report deleted successfully"
+    });
+
+  }
+
+  catch (err) {
+
+    console.log(err);
+
+    res.status(500).json({
+      message: err.message
+    });
+
+  }
+
+});
 
 /* ================= MY REPORTS ================= */
 
