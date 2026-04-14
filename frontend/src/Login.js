@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,7 +16,7 @@ function Login() {
 
     try {
 
-      const res = await axios.post(
+      const response = await axios.post(
         "https://disaster-management-response-system.onrender.com/login",
         {
           email,
@@ -21,55 +24,57 @@ function Login() {
         }
       );
 
-      console.log(res.data);
+      console.log(response.data);
+
+      /* Save token */
 
       localStorage.setItem(
         "token",
-        res.data.token
+        response.data.token
+      );
+
+      localStorage.setItem(
+        "userId",
+        response.data.user._id
       );
 
       localStorage.setItem(
         "role",
-        res.data.role
-      );
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify(res.data.user)
+        response.data.role
       );
 
       alert("Login Successful");
 
-      /* Redirect based on role */
+      /* Redirect */
 
-      if (res.data.role === "admin") {
+      if (response.data.role === "admin") {
 
-        window.location.href =
-          "/admin-dashboard";
+        navigate("/admin");
 
       }
 
-      else if (res.data.role === "rescue") {
+      else if (response.data.role === "rescue") {
 
-        window.location.href =
-          "/rescue-dashboard";
+        navigate("/rescue");
 
       }
 
       else {
 
-        window.location.href =
-          "/user-dashboard";
+        navigate("/user");
 
       }
 
     }
 
-    catch (err) {
+    catch (error) {
 
-      console.log(err);
+      console.log(error);
 
-      alert("Login Failed");
+      alert(
+        error.response?.data?.message ||
+        "Login Failed"
+      );
 
     }
 
@@ -77,80 +82,176 @@ function Login() {
 
   return (
 
-    <div className="login-container">
+    <div style={styles.wrapper}>
 
-      <h2>🚨 Disaster Management System</h2>
+      <div style={styles.overlay}></div>
 
-      <h3>Emergency Login Portal</h3>
+      <div style={styles.loginBox}>
 
-      <form onSubmit={handleLogin}>
+        <h1 style={styles.title}>
+          🚨 Disaster Management System
+        </h1>
 
-        <input
-          type="email"
-          placeholder="Enter Email"
-          value={email}
-          onChange={(e) =>
-            setEmail(e.target.value)
-          }
-          required
-        />
+        <p style={styles.subtitle}>
+          Emergency Login Portal
+        </p>
 
-        <input
-          type="password"
-          placeholder="Enter Password"
-          value={password}
-          onChange={(e) =>
-            setPassword(e.target.value)
-          }
-          required
-        />
+        <form onSubmit={handleLogin}>
 
-        <select
-          value={role}
-          onChange={(e) =>
-            setRole(e.target.value)
-          }
-        >
+          <input
+            type="email"
+            placeholder="Enter Email"
+            value={email}
+            onChange={(e) =>
+              setEmail(e.target.value)
+            }
+            style={styles.input}
+            required
+          />
 
-          <option value="user">
-            User
-          </option>
+          <input
+            type="password"
+            placeholder="Enter Password"
+            value={password}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
+            style={styles.input}
+            required
+          />
 
-          <option value="admin">
-            Admin
-          </option>
+          <select
+            value={role}
+            onChange={(e) =>
+              setRole(e.target.value)
+            }
+            style={styles.select}
+          >
 
-          <option value="rescue">
-            Rescue
-          </option>
+            <option value="user">
+              User
+            </option>
 
-        </select>
+            <option value="admin">
+              Admin
+            </option>
 
-        <button type="submit">
+            <option value="rescue">
+              Rescue Team
+            </option>
 
-          LOGIN
+          </select>
 
-        </button>
+          <button
+            type="submit"
+            style={styles.button}
+          >
 
-      </form>
+            LOGIN
 
-      <br />
+          </button>
 
-      <button
-        onClick={() =>
-          window.location.href =
-          "/register"
-        }
-      >
+          <button
+            type="button"
+            style={styles.registerButton}
+            onClick={() =>
+              navigate("/register")
+            }
+          >
 
-        New User? Register Here
+            New User? Register Here
 
-      </button>
+          </button>
+
+        </form>
+
+      </div>
 
     </div>
 
   );
 
 }
+
+/* 🎨 THEME STYLES */
+
+const styles = {
+
+  wrapper: {
+    height: "100vh",
+    background:
+      "url('https://images.unsplash.com/photo-1581090700227-1e37b190418e') no-repeat center center/cover",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative"
+  },
+
+  overlay: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    background:
+      "rgba(0,0,0,0.6)"
+  },
+
+  loginBox: {
+    position: "relative",
+    background: "white",
+    padding: "40px",
+    borderRadius: "12px",
+    width: "350px",
+    textAlign: "center",
+    zIndex: "2"
+  },
+
+  title: {
+    color: "#d32f2f",
+    marginBottom: "10px"
+  },
+
+  subtitle: {
+    marginBottom: "20px",
+    color: "#555"
+  },
+
+  input: {
+    width: "100%",
+    padding: "10px",
+    margin: "10px 0",
+    borderRadius: "6px",
+    border: "1px solid #ccc"
+  },
+
+  select: {
+    width: "100%",
+    padding: "10px",
+    margin: "10px 0",
+    borderRadius: "6px"
+  },
+
+  button: {
+    width: "100%",
+    padding: "12px",
+    background: "#d32f2f",
+    color: "white",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    marginTop: "10px"
+  },
+
+  registerButton: {
+    width: "100%",
+    padding: "10px",
+    marginTop: "10px",
+    background: "#1976d2",
+    color: "white",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer"
+  }
+
+};
 
 export default Login;
