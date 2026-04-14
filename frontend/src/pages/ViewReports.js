@@ -119,32 +119,37 @@ function ViewReports() {
 
   const updateStatus = async (reportId, status) => {
 
-    try {
+  try {
 
-      await axios.put(
+    console.log(
+      "Updating status:",
+      reportId,
+      status
+    );
 
-        `https://disaster-management-response-system.onrender.com/api/reports/${reportId}`,
+    await axios.put(
 
-        {
-          status: status
-        }
+      `https://disaster-management-response-system.onrender.com/api/reports/${reportId}/status`,
 
-      );
+      {
+        status: status
+      }
 
-      fetchReports();
+    );
 
-    }
+    fetchReports();
 
-    catch (error) {
+  }
 
-      console.log(error);
+  catch (error) {
 
-      alert("Status update failed");
+    console.log("Status Error:", error);
 
-    }
+    alert("Status update failed");
 
-  };
+  }
 
+};
   /* ================= STATUS COLOR ================= */
 
   const getStatusColor = (status) => {

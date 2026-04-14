@@ -167,7 +167,7 @@ router.get("/", async (req, res) => {
 
 /* ================= UPDATE STATUS ================= */
 
-router.put("/:id", async (req, res) => {
+router.put("/:id/status", async (req, res) => {
 
   try {
 
