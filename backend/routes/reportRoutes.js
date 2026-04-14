@@ -1,46 +1,51 @@
 const express = require("express");
 const router = express.Router();
 
-const Report =
-require("../models/Report");
+const Report = require("../models/Report");
 
-const multer =
-require("multer");
+const multer = require("multer");
+const path = require("path");
 
-const path =
-require("path");
+/* ================= STORAGE CONFIG ================= */
 
-/* STORAGE */
+const storage = multer.diskStorage({
 
-const storage =
-multer.diskStorage({
+  destination: (req, file, cb) => {
 
-  destination:
-  (req, file, cb) => {
+    // Absolute path fix (important for Render)
 
-    cb(null, "uploads/");
+    cb(
+      null,
+      path.join(__dirname, "../uploads")
+    );
 
   },
 
-  filename:
-  (req, file, cb) => {
+  filename: (req, file, cb) => {
 
     cb(
       null,
       Date.now() +
-      path.extname(
-        file.originalname
-      )
+      path.extname(file.originalname)
     );
 
   }
 
 });
 
-const upload =
-multer({ storage });
+/* Upload config */
 
-/* CREATE REPORT */
+const upload = multer({
+
+  storage: storage,
+
+  limits: {
+    fileSize: 5 * 1024 * 1024   // 5MB limit
+  }
+
+});
+
+/* ================= CREATE REPORT ================= */
 
 router.post(
   "/",
@@ -51,6 +56,7 @@ router.post(
     try {
 
       console.log("BODY:", req.body);
+      console.log("FILE:", req.file);
 
       const {
         location,
@@ -59,17 +65,16 @@ router.post(
         userId
       } = req.body;
 
-      const report =
-      await Report.create({
+      const report = await Report.create({
 
         location,
         type,
         description,
 
         image:
-        req.file
-        ? req.file.filename
-        : "",
+          req.file
+          ? req.file.filename
+          : "",
 
         lat: 17.3850,
         lng: 78.4867,
@@ -78,17 +83,15 @@ router.post(
 
       });
 
-      res.status(201)
-      .json(report);
+      res.status(201).json(report);
 
     }
 
     catch (err) {
 
-      console.log(err);
+      console.log("ERROR:", err);
 
-      res.status(500)
-      .json({
+      res.status(500).json({
         message: err.message
       });
 
@@ -96,7 +99,7 @@ router.post(
 
 });
 
-/* GET ALL REPORTS */
+/* ================= GET ALL REPORTS ================= */
 
 router.get(
   "/",
@@ -105,8 +108,8 @@ router.get(
     try {
 
       const reports =
-      await Report.find()
-      .sort({ createdAt: -1 });
+        await Report.find()
+        .sort({ createdAt: -1 });
 
       res.json(reports);
 
@@ -116,8 +119,7 @@ router.get(
 
       console.log(err);
 
-      res.status(500)
-      .json({
+      res.status(500).json({
         message: err.message
       });
 
@@ -125,39 +127,37 @@ router.get(
 
 });
 
-/* MY REPORTS */
+/* ================= MY REPORTS ================= */
 
 router.get(
-"/my-reports/:userId",
+  "/my-reports/:userId",
 
-async (req, res) => {
+  async (req, res) => {
 
-  try {
+    try {
 
-    const reports =
-    await Report.find({
+      const reports =
+        await Report.find({
 
-      userId:
-      req.params.userId
+          userId:
+            req.params.userId
 
-    });
+        });
 
-    res.json(reports);
+      res.json(reports);
 
-  }
+    }
 
-  catch (err) {
+    catch (err) {
 
-    console.log(err);
+      console.log(err);
 
-    res.status(500)
-    .json({
-      message: err.message
-    });
+      res.status(500).json({
+        message: err.message
+      });
 
-  }
+    }
 
 });
 
-module.exports =
-router;
+module.exports = router;

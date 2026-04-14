@@ -5,8 +5,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
 const http = require("http");
+const path = require("path");   // ✅ IMPORTANT
 
 /* Models */
 
@@ -25,7 +25,7 @@ require("./routes/alertRoutes");
 
 const app = express();
 
-/* Middleware */
+/* ================= Middleware ================= */
 
 app.use(cors());
 
@@ -35,14 +35,16 @@ app.use(express.urlencoded({
   extended: true
 }));
 
-/* Static uploads */
+/* ================= Static uploads (FIXED) ================= */
 
 app.use(
   "/uploads",
-  express.static("uploads")
+  express.static(
+    path.join(__dirname, "uploads")   // ✅ FIXED
+  )
 );
 
-/* Routes */
+/* ================= Routes ================= */
 
 app.use("/api/reports", reportRoutes);
 
@@ -61,8 +63,6 @@ console.log("MongoDB Connected")
 .catch(err =>
 console.log("MongoDB Error:", err)
 );
-
-
 
 /* ================= REGISTER ================= */
 
@@ -89,6 +89,8 @@ if(existing)
 return res.send(
 "Email already exists"
 );
+
+/* Hash password */
 
 const hashed =
 await bcrypt.hash(password,10);
@@ -131,8 +133,13 @@ async (req,res)=>{
 
 try {
 
-const { email,password }
+const {
+email,
+password
+}
 = req.body;
+
+/* Find user */
 
 const user =
 await User.findOne({ email });
@@ -142,6 +149,8 @@ return res.status(400)
 .json({
 message:"User not found"
 });
+
+/* Compare password */
 
 const valid =
 await bcrypt.compare(
@@ -155,13 +164,19 @@ return res.status(400)
 message:"Wrong password"
 });
 
+/* Create token */
+
 const token =
 jwt.sign({
 
 id:user._id,
 role:user.role
 
-},"secretkey");
+},
+"secretkey"
+);
+
+/* Send response */
 
 res.json({
 
