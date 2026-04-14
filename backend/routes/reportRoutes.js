@@ -96,17 +96,32 @@ router.post(
 
 });
 
-/* GET ALL */
+/* GET ALL REPORTS */
 
 router.get(
   "/",
   async (req, res) => {
 
-    const reports =
-    await Report.find()
-    .sort({ createdAt: -1 });
+    try {
 
-    res.json(reports);
+      const reports =
+      await Report.find()
+      .sort({ createdAt: -1 });
+
+      res.json(reports);
+
+    }
+
+    catch (err) {
+
+      console.log(err);
+
+      res.status(500)
+      .json({
+        message: err.message
+      });
+
+    }
 
 });
 
@@ -132,6 +147,8 @@ async (req, res) => {
   }
 
   catch (err) {
+
+    console.log(err);
 
     res.status(500)
     .json({
