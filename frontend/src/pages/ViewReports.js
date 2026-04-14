@@ -7,11 +7,17 @@ function ViewReports() {
   const [reports, setReports] =
     useState([]);
 
+  const [rescues, setRescues] =
+    useState([]);
+
   useEffect(() => {
 
     fetchReports();
+    fetchRescues();
 
   }, []);
+
+  /* ================= FETCH REPORTS ================= */
 
   const fetchReports =
     async () => {
@@ -20,7 +26,7 @@ function ViewReports() {
 
         const res =
           await axios.get(
-"http://localhost:5000/api/reports"
+            "https://disaster-management-response-system.onrender.com/api/reports"
           );
 
         setReports(res.data);
@@ -35,13 +41,39 @@ function ViewReports() {
 
   };
 
+  /* ================= FETCH RESCUE TEAMS ================= */
+
+  const fetchRescues =
+    async () => {
+
+      try {
+
+        const res =
+          await axios.get(
+            "https://disaster-management-response-system.onrender.com/api/admin/rescues"
+          );
+
+        setRescues(res.data);
+
+      }
+
+      catch (error) {
+
+        console.log(error);
+
+      }
+
+  };
+
+  /* ================= DELETE REPORT ================= */
+
   const deleteReport =
     async (id) => {
 
       try {
 
         await axios.delete(
-`http://localhost:5000/api/reports/${id}`
+          `https://disaster-management-response-system.onrender.com/api/reports/${id}`
         );
 
         fetchReports();
@@ -56,7 +88,36 @@ function ViewReports() {
 
   };
 
-  // 🎨 Status Color
+  /* ================= ASSIGN RESCUE ================= */
+
+  const assignRescue =
+    async (reportId, rescueName) => {
+
+      try {
+
+        await axios.put(
+
+          `https://disaster-management-response-system.onrender.com/api/reports/${reportId}/assign`,
+
+          {
+            assignedRescue: rescueName
+          }
+
+        );
+
+        fetchReports();
+
+      }
+
+      catch (error) {
+
+        console.log(error);
+
+      }
+
+  };
+
+  /* ================= STATUS COLOR ================= */
 
   const getStatusColor =
     (status) => {
@@ -126,6 +187,51 @@ report.status
 </b>
 
 </p>
+
+{/* ================= ASSIGNED RESCUE ================= */}
+
+<p>
+🚑 Assigned:
+
+<b>
+ {report.assignedRescue || " None"}
+</b>
+</p>
+
+{/* ================= RESCUE DROPDOWN ================= */}
+
+<select
+
+className="btn btn-assign"
+
+onChange={(e) =>
+
+assignRescue(
+report._id,
+e.target.value
+)
+
+}
+>
+
+<option>
+Assign Rescue
+</option>
+
+{rescues.map(rescue => (
+
+<option
+key={rescue._id}
+value={rescue.name}
+>
+
+{rescue.name}
+
+</option>
+
+))}
+
+</select>
 
 <p>
 🕒 {

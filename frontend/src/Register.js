@@ -37,7 +37,7 @@ function Register() {
     try {
 
       const res = await axios.post(
-        "http://localhost:5000/register",
+        "https://disaster-management-response-system.onrender.com/register",
         formData
       );
 

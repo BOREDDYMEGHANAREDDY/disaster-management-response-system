@@ -33,7 +33,7 @@ function ViewAlerts() {
 
         const res =
           await axios.get(
-"http://localhost:5000/api/alerts"
+"https://disaster-management-response-system.onrender.com/api/alerts"
           );
 
         setAlerts(res.data);

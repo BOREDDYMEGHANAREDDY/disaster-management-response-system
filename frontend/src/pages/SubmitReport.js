@@ -84,7 +84,7 @@ function SubmitReport() {
 
         await axios.post(
 
-"http://localhost:5000/api/reports",
+"https://disaster-management-response-system.onrender.com/api/reports",
 
           data,
 
