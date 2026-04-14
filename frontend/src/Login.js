@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Login() {
 
@@ -8,7 +8,7 @@ function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("user");
+  const [role, setRole] = useState("User");
 
   const handleLogin = async (e) => {
 
@@ -19,12 +19,13 @@ function Login() {
       const response = await axios.post(
         "https://disaster-management-response-system.onrender.com/login",
         {
-          email,
-          password
+          email: email,
+          password: password,
+          role: role
         }
       );
 
-      console.log(response.data);
+      console.log("Login Success:", response.data);
 
       /* Save token */
 
@@ -33,27 +34,32 @@ function Login() {
         response.data.token
       );
 
+      /* Save userId */
+
       localStorage.setItem(
         "userId",
         response.data.user._id
       );
 
+      /* Save role */
+
+      const userRole =
+        response.data.user.role.toLowerCase();
+
       localStorage.setItem(
         "role",
-        response.data.role
+        userRole
       );
-
-      alert("Login Successful");
 
       /* Redirect */
 
-      if (response.data.role === "admin") {
+      if (userRole === "admin") {
 
         navigate("/admin");
 
       }
 
-      else if (response.data.role === "rescue") {
+      else if (userRole === "rescue") {
 
         navigate("/rescue");
 
@@ -69,7 +75,7 @@ function Login() {
 
     catch (error) {
 
-      console.log(error);
+      console.error(error);
 
       alert(
         error.response?.data?.message ||
@@ -98,27 +104,33 @@ function Login() {
 
         <form onSubmit={handleLogin}>
 
+          {/* Email */}
+
           <input
             type="email"
             placeholder="Enter Email"
+            required
             value={email}
             onChange={(e) =>
               setEmail(e.target.value)
             }
             style={styles.input}
-            required
           />
+
+          {/* Password */}
 
           <input
             type="password"
             placeholder="Enter Password"
+            required
             value={password}
             onChange={(e) =>
               setPassword(e.target.value)
             }
             style={styles.input}
-            required
           />
+
+          {/* Role */}
 
           <select
             value={role}
@@ -128,40 +140,46 @@ function Login() {
             style={styles.select}
           >
 
-            <option value="user">
-              User
-            </option>
-
-            <option value="admin">
+            <option value="Admin">
               Admin
             </option>
 
-            <option value="rescue">
+            <option value="Rescue">
               Rescue Team
             </option>
 
+            <option value="User">
+              User
+            </option>
+
           </select>
+
+          {/* Login Button */}
 
           <button
             type="submit"
             style={styles.button}
           >
-
             LOGIN
-
           </button>
 
-          <button
-            type="button"
-            style={styles.registerButton}
-            onClick={() =>
-              navigate("/register")
-            }
-          >
+          {/* Register Button */}
 
-            New User? Register Here
+          {role === "User" && (
 
-          </button>
+            <button
+              type="button"
+              style={styles.registerButton}
+              onClick={() =>
+                navigate("/register")
+              }
+            >
+
+              New User? Register Here
+
+            </button>
+
+          )}
 
         </form>
 
@@ -173,83 +191,174 @@ function Login() {
 
 }
 
-/* 🎨 THEME STYLES */
+/* ================= STYLES ================= */
 
 const styles = {
 
   wrapper: {
+
     height: "100vh",
-    background:
-      "url('https://images.unsplash.com/photo-1581090700227-1e37b190418e') no-repeat center center/cover",
+
+    /* Background Image */
+
+    backgroundImage:
+      "linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('/images/bg-disaster.png')",
+
+    backgroundSize: "cover",
+
+    backgroundPosition: "center",
+
+    backgroundRepeat: "no-repeat",
+
     display: "flex",
+
     justifyContent: "center",
+
     alignItems: "center",
+
     position: "relative"
+
   },
 
   overlay: {
+
     position: "absolute",
+
     width: "100%",
+
     height: "100%",
+
     background:
-      "rgba(0,0,0,0.6)"
+      "radial-gradient(circle, rgba(255,69,0,0.25), rgba(0,0,0,0.9))"
+
   },
 
   loginBox: {
-    position: "relative",
-    background: "white",
+
+    width: "380px",
+
     padding: "40px",
-    borderRadius: "12px",
-    width: "350px",
+
+    background: "rgba(0,0,0,0.65)",
+
+    borderRadius: "15px",
+
+    backdropFilter: "blur(12px)",
+
+    boxShadow:
+      "0 0 25px rgba(255,69,0,0.7), 0 0 60px rgba(255,0,0,0.4)",
+
     textAlign: "center",
+
     zIndex: "2"
+
   },
 
   title: {
-    color: "#d32f2f",
-    marginBottom: "10px"
+
+    color: "#ff4500",
+
+    fontSize: "26px",
+
+    marginBottom: "10px",
+
+    fontWeight: "bold"
+
   },
 
   subtitle: {
-    marginBottom: "20px",
-    color: "#555"
+
+    color: "#ffc107",
+
+    marginBottom: "25px",
+
+    fontSize: "14px"
+
   },
 
   input: {
+
     width: "100%",
-    padding: "10px",
-    margin: "10px 0",
-    borderRadius: "6px",
-    border: "1px solid #ccc"
+
+    padding: "12px",
+
+    marginBottom: "18px",
+
+    background: "transparent",
+
+    border: "2px solid #ff4500",
+
+    borderRadius: "8px",
+
+    color: "white",
+
+    fontSize: "14px"
+
   },
 
   select: {
+
     width: "100%",
-    padding: "10px",
-    margin: "10px 0",
-    borderRadius: "6px"
+
+    padding: "12px",
+
+    marginBottom: "20px",
+
+    borderRadius: "8px",
+
+    border: "2px solid #ff4500",
+
+    background: "black",
+
+    color: "white",
+
+    fontSize: "14px"
+
   },
 
   button: {
+
     width: "100%",
+
     padding: "12px",
-    background: "#d32f2f",
-    color: "white",
+
+    background:
+      "linear-gradient(45deg,#ff0000,#ff4500,#ff8c00)",
+
     border: "none",
-    borderRadius: "6px",
+
+    borderRadius: "8px",
+
+    fontSize: "16px",
+
+    color: "white",
+
     cursor: "pointer",
-    marginTop: "10px"
+
+    fontWeight: "bold"
+
   },
 
   registerButton: {
+
     width: "100%",
+
+    marginTop: "12px",
+
     padding: "10px",
-    marginTop: "10px",
-    background: "#1976d2",
-    color: "white",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer"
+
+    background: "transparent",
+
+    border: "2px solid #ffc107",
+
+    borderRadius: "8px",
+
+    color: "#ffc107",
+
+    cursor: "pointer",
+
+    fontSize: "13px"
+
   }
 
 };
